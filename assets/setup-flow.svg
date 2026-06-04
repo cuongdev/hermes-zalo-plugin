@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 348" role="img" aria-label="Setup steps">
+  <title>hermes-zalo-plugin — setup in 4 steps</title>
+  <defs>
+    <linearGradient id="badge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B5CFF"/>
+      <stop offset="1" stop-color="#00C2FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="759" height="347" rx="20" fill="#FFFFFF" stroke="#E3E9F2"/>
+
+  <text x="32" y="44" font-family="'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif" font-size="20" font-weight="800" fill="#0F1F3D">Setup in 4 steps</text>
+  <text x="32" y="68" font-family="'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif" font-size="13" fill="#5B6B86">macOS · Linux · Windows — one global install, then log in once.</text>
+
+  <!-- connector line down the badges -->
+  <line x1="52" y1="110" x2="52" y2="300" stroke="#D7E0EE" stroke-width="2"/>
+
+  <!-- step rows -->
+  <g font-family="'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif">
+    <!-- 1 -->
+    <circle cx="52" cy="110" r="18" fill="url(#badge)"/>
+    <text x="52" y="116" text-anchor="middle" font-size="16" font-weight="800" fill="#fff">1</text>
+    <text x="88" y="106" font-size="16" font-weight="700" fill="#0F1F3D">Install</text>
+    <g>
+      <rect x="88" y="116" width="248" height="26" rx="7" fill="#0F1F3D"/>
+      <text x="100" y="134" font-family="'SF Mono',ui-monospace,Menlo,Consolas,monospace" font-size="13" fill="#9FE7FF">npm i -g hermes-zalo-plugin</text>
+    </g>
+
+    <!-- 2 -->
+    <circle cx="52" cy="174" r="18" fill="url(#badge)"/>
+    <text x="52" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="#fff">2</text>
+    <text x="88" y="170" font-size="16" font-weight="700" fill="#0F1F3D">Log in — scan the QR right in your terminal</text>
+    <g>
+      <rect x="88" y="180" width="224" height="26" rx="7" fill="#0F1F3D"/>
+      <text x="100" y="198" font-family="'SF Mono',ui-monospace,Menlo,Consolas,monospace" font-size="13" fill="#9FE7FF">hermes-zalo-plugin setup</text>
+    </g>
+
+    <!-- 3 -->
+    <circle cx="52" cy="238" r="18" fill="url(#badge)"/>
+    <text x="52" y="244" text-anchor="middle" font-size="16" font-weight="800" fill="#fff">3</text>
+    <text x="88" y="234" font-size="16" font-weight="700" fill="#0F1F3D">Register in Hermes</text>
+    <g>
+      <rect x="88" y="244" width="192" height="26" rx="7" fill="#0F1F3D"/>
+      <text x="100" y="262" font-family="'SF Mono',ui-monospace,Menlo,Consolas,monospace" font-size="13" fill="#9FE7FF">hermes gateway setup</text>
+    </g>
+    <text x="294" y="262" font-size="13" fill="#5B6B86">→ choose “Zalo”</text>
+
+    <!-- 4 -->
+    <circle cx="52" cy="302" r="18" fill="url(#badge)"/>
+    <text x="52" y="308" text-anchor="middle" font-size="16" font-weight="800" fill="#fff">4</text>
+    <text x="88" y="298" font-size="16" font-weight="700" fill="#0F1F3D">Chat from Zalo</text>
+    <text x="88" y="320" font-size="13" fill="#5B6B86">message your Hermes agent from a Zalo account — it replies like a person.</text>
+  </g>
+</svg>

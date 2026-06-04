@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 560" role="img" aria-label="Chatting with the Hermes agent from Zalo">
+  <title>Talk to your Hermes agent from Zalo</title>
+  <defs>
+    <linearGradient id="hdr" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B5CFF"/>
+      <stop offset="1" stop-color="#00C2FF"/>
+    </linearGradient>
+    <clipPath id="win"><rect x="4" y="4" width="432" height="552" rx="28"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#win)" font-family="'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif">
+    <rect x="4" y="4" width="432" height="552" fill="#EDF2F8"/>
+
+    <!-- header -->
+    <rect x="4" y="4" width="432" height="72" fill="url(#hdr)"/>
+    <circle cx="40" cy="40" r="20" fill="#FFFFFF"/>
+    <text x="40" y="46" text-anchor="middle" font-size="18" font-weight="800" fill="#0B5CFF">H</text>
+    <circle cx="55" cy="54" r="5" fill="#27D07F" stroke="#FFFFFF" stroke-width="2"/>
+    <text x="72" y="36" font-size="16" font-weight="700" fill="#FFFFFF">Hermes</text>
+    <text x="72" y="55" font-size="12" fill="#DCEEFF">online · via Zalo</text>
+
+    <!-- bot bubble 1 -->
+    <rect x="20" y="100" width="244" height="40" rx="16" fill="#FFFFFF" stroke="#E1E8F2"/>
+    <text x="36" y="125" font-size="14" fill="#1B2A41">Chào! Mình là trợ lý Hermes 👋</text>
+
+    <!-- user bubble 1 (right) -->
+    <rect x="186" y="156" width="230" height="40" rx="16" fill="url(#hdr)"/>
+    <text x="400" y="181" text-anchor="end" font-size="14" fill="#FFFFFF">Nhắc mình 3h chiều họp team</text>
+
+    <!-- bot bubble 2 -->
+    <rect x="20" y="212" width="250" height="40" rx="16" fill="#FFFFFF" stroke="#E1E8F2"/>
+    <text x="36" y="237" font-size="14" fill="#1B2A41">Đã đặt nhắc lúc 15:00 hôm nay ⏰</text>
+
+    <!-- user bubble 2 (right) -->
+    <rect x="190" y="268" width="226" height="40" rx="16" fill="url(#hdr)"/>
+    <text x="400" y="293" text-anchor="end" font-size="14" fill="#FFFFFF">Tóm tắt email mới giúp mình</text>
+
+    <!-- bot bubble 3 (multi-line) -->
+    <rect x="20" y="324" width="288" height="104" rx="16" fill="#FFFFFF" stroke="#E1E8F2"/>
+    <text x="36" y="349" font-size="14" font-weight="600" fill="#1B2A41">Bạn có 3 email mới:</text>
+    <text x="36" y="372" font-size="14" fill="#33425C">• Hợp đồng A đã được ký</text>
+    <text x="36" y="394" font-size="14" fill="#33425C">• Họp team dời sang 16:00</text>
+    <text x="36" y="416" font-size="14" fill="#33425C">• Hoá đơn tháng 5 cần duyệt</text>
+
+    <!-- input bar -->
+    <rect x="20" y="496" width="360" height="44" rx="22" fill="#FFFFFF" stroke="#E1E8F2"/>
+    <text x="40" y="523" font-size="14" fill="#9AA8BE">Nhập tin nhắn…</text>
+    <circle cx="408" cy="518" r="22" fill="url(#hdr)"/>
+    <path d="M398 518 L416 518 M409 511 L416 518 L409 525" stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <rect x="4" y="4" width="432" height="552" rx="28" fill="none" stroke="#E3E9F2"/>
+</svg>

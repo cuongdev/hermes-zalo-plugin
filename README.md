@@ -55,6 +55,10 @@ build tools** (no `bun`, no compiler); it's pulled prebuilt from npm.
 
 ## Quick start (one-time)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/cuongdev/hermes-zalo-plugin/main/assets/setup-flow.svg" alt="Setup in 4 steps: install, scan QR, register in Hermes, chat from Zalo" width="620">
+</p>
+
 Works on **macOS, Linux, and Windows** — Node drives everything; no `bun`, no
 build-from-source (zca-js is pulled from npm).
 
@@ -275,6 +279,10 @@ Run the bridge first (logged in), then the Hermes gateway.
 > instead of the old mention flag.
 
 ## 6. Everyday use
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/cuongdev/hermes-zalo-plugin/main/assets/zalo-chat.svg" alt="Chatting with the Hermes agent from Zalo" width="300">
+</p>
 
 - **Chat 1-1:** message the Zalo account from another phone → the agent replies
   (subject to `ZALO_ALLOWED_USERS`).
