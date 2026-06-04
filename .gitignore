@@ -12,6 +12,14 @@ zalo-qr.png
 # npm pack output
 *.tgz
 
+# Python bytecode (hermes-plugin/ adapter)
+__pycache__/
+*.pyc
+
+# Local tooling indexes
+.codegraph/
+.serena/
+
 # OS / editor cruft
 .DS_Store
 *.swp
