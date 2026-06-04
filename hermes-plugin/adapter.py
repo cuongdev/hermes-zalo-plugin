@@ -1210,27 +1210,34 @@ def interactive_setup() -> None:
         )
     save_env_value("ZALO_ALLOWED_THREADS", (threads_csv or "").strip())
 
-    # C) Group response mode — pick by number instead of typing the word.
-    print_info("In GROUPS, when should the bot respond?")
-    _gm_opts = [
-        ("mention", "Chỉ khi được @nhắc tên hoặc trả lời tin của bot (khuyên dùng)"),
-        ("all", "Mọi tin nhắn trong các nhóm được phép"),
-        ("off", "Không bao giờ trong nhóm (chỉ chat riêng/DM)"),
-    ]
-    for i, (val, desc) in enumerate(_gm_opts, 1):
-        print_info(f"   {i}. {val:<8} — {desc}")
-    _cur_mode = get_env_value("ZALO_GROUP_MODE") or "mention"
-    _cur_idx = next((str(i) for i, (v, _) in enumerate(_gm_opts, 1) if v == _cur_mode), "1")
-    _pick = prompt("Chọn (1/2/3)", default=_cur_idx)
-    try:
-        mode = _gm_opts[int(str(_pick).strip()) - 1][0]
-    except (ValueError, IndexError):
-        # Fall back to accepting the literal word, else default.
-        mode = (str(_pick) or "").strip().lower()
-        if mode not in {"mention", "all", "off"}:
-            mode = "mention"
-    save_env_value("ZALO_GROUP_MODE", mode)
-    print_info(f"   → {mode}")
+    # C) Group response mode. Only ask when the user actually restricted to
+    # specific groups; if they left the group picker blank, skip the question
+    # and keep the safe default ("mention") instead of bothering them.
+    if (threads_csv or "").strip():
+        print_info("In GROUPS, when should the bot respond?")
+        _gm_opts = [
+            ("mention", "Chỉ khi được @nhắc tên hoặc trả lời tin của bot (khuyên dùng)"),
+            ("all", "Mọi tin nhắn trong các nhóm được phép"),
+            ("off", "Không bao giờ trong nhóm (chỉ chat riêng/DM)"),
+        ]
+        for i, (val, desc) in enumerate(_gm_opts, 1):
+            print_info(f"   {i}. {val:<8} — {desc}")
+        _cur_mode = get_env_value("ZALO_GROUP_MODE") or "mention"
+        _cur_idx = next((str(i) for i, (v, _) in enumerate(_gm_opts, 1) if v == _cur_mode), "1")
+        _pick = prompt("Chọn (1/2/3)", default=_cur_idx)
+        try:
+            mode = _gm_opts[int(str(_pick).strip()) - 1][0]
+        except (ValueError, IndexError):
+            # Fall back to accepting the literal word, else default.
+            mode = (str(_pick) or "").strip().lower()
+            if mode not in {"mention", "all", "off"}:
+                mode = "mention"
+        save_env_value("ZALO_GROUP_MODE", mode)
+        print_info(f"   → {mode}")
+    else:
+        mode = get_env_value("ZALO_GROUP_MODE") or "mention"
+        save_env_value("ZALO_GROUP_MODE", mode)
+        print_info(f"   → Bỏ qua chế độ nhóm (không chọn nhóm cụ thể; mặc định '{mode}')")
 
     # Discoverability helper: log inbound ids so the user can add more later.
     if prompt_yes_no("Log sender/thread IDs of incoming messages (to find IDs later)?", False):
