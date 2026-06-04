@@ -1,6 +1,6 @@
 {
   "name": "hermes-zalo-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Connect a personal Zalo account to the Hermes Agent gateway via zca-js (unofficial Zalo API). SSE inbound + REST outbound. Cross-platform (macOS, Linux, Windows).",
   "type": "module",
   "bin": {
