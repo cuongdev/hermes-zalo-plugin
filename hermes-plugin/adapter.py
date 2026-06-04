@@ -1210,9 +1210,10 @@ def interactive_setup() -> None:
         )
     save_env_value("ZALO_ALLOWED_THREADS", (threads_csv or "").strip())
 
-    # C) Group response mode. Only ask when the user actually restricted to
-    # specific groups; if they left the group picker blank, skip the question
-    # and keep the safe default ("mention") instead of bothering them.
+    # C) Group response mode. Only ask when the user picked specific groups.
+    # If they left the group picker blank, that means "no groups" → set group
+    # mode to "off" so the bot never replies in any group, even when @mentioned
+    # (groups opt-in). DMs / 1-1 chats still work.
     if (threads_csv or "").strip():
         print_info("In GROUPS, when should the bot respond?")
         _gm_opts = [
@@ -1235,9 +1236,9 @@ def interactive_setup() -> None:
         save_env_value("ZALO_GROUP_MODE", mode)
         print_info(f"   → {mode}")
     else:
-        mode = get_env_value("ZALO_GROUP_MODE") or "mention"
-        save_env_value("ZALO_GROUP_MODE", mode)
-        print_info(f"   → Bỏ qua chế độ nhóm (không chọn nhóm cụ thể; mặc định '{mode}')")
+        # No groups chosen → bot stays out of every group (DMs still work).
+        save_env_value("ZALO_GROUP_MODE", "off")
+        print_info("   → Không chọn nhóm nào → bot sẽ KHÔNG trả lời trong nhóm (kể cả khi @nhắc). Chat 1-1 (DM) vẫn hoạt động.")
 
     # Discoverability helper: log inbound ids so the user can add more later.
     if prompt_yes_no("Log sender/thread IDs of incoming messages (to find IDs later)?", False):
