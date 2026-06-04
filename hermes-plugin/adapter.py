@@ -1056,7 +1056,7 @@ def register(ctx):
         allowed_users_env="ZALO_ALLOWED_USERS",
         allow_all_env="ZALO_ALLOW_ALL_USERS",
         max_message_length=4000,
-        emoji="🇻🇳",
+        emoji="",
         pii_safe=False,
         allow_update_command=True,
         platform_hint=(
