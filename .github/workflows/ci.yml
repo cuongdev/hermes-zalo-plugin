@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax check all source files
+        run: |
+          node --check server.js
+          node --check zaloClient.js
+          node --check permissions.js
+          node --check paths.js
+          node --check login.mjs
+          node --check install.mjs
+          node --check uninstall.mjs
+          node --check bin/cli.mjs
+
+      - name: CLI smoke test (help + status, no login)
+        run: |
+          node bin/cli.mjs help
+          node bin/cli.mjs status
+
+      - name: Verify npm pack contains no secrets
+        shell: bash
+        run: |
+          npm pack --dry-run 2>&1 | tee /tmp/pack.txt
+          if grep -Eq "credentials\.json|\.env|data/" /tmp/pack.txt; then
+            echo "::error::Package would ship sensitive files"; exit 1
+          fi
+          echo "✓ pack contents clean"

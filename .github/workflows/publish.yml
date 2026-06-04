@@ -1,0 +1,38 @@
+name: Publish to npm
+
+# Publishes when you push a version tag (e.g. v1.0.0) or create a GitHub Release.
+# Requires an NPM_TOKEN secret (see README → Publishing).
+on:
+  push:
+    tags:
+      - "v*"
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # enables npm provenance
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Syntax check
+        run: |
+          for f in server.js zaloClient.js permissions.js paths.js login.mjs install.mjs uninstall.mjs bin/cli.mjs; do
+            node --check "$f"
+          done
+
+      - name: Publish
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
