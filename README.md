@@ -285,21 +285,34 @@ in the foreground. The bridge auto-reconnects the Zalo websocket (zca-js
 
 ## Publishing (maintainers)
 
-CI runs on every push/PR (syntax + smoke + pack-safety on Node 18/20/22 across
-macOS/Linux/Windows). Publishing is automated on version tags:
+CI runs on every push/PR (syntax + CLI smoke + pack-safety on Node 18/20/22
+across macOS/Linux/Windows). Publishing uses **npm Trusted Publishing (OIDC)** —
+no long-lived `NPM_TOKEN` to store or leak.
 
-1. Create an **npm automation token**: npmjs.com → Access Tokens → Generate →
-   *Automation*. Copy it.
-2. Add it to the GitHub repo: Settings → Secrets and variables → Actions →
-   New repository secret → name `NPM_TOKEN`, paste the token.
-3. Cut a release:
+**One-time bootstrap** (npm requires the package to exist before you can enable
+trusted publishing for it):
+
+1. Publish the first version manually:
    ```bash
-   npm version patch        # bumps package.json + creates a git tag
-   git push --follow-tags
+   npm login
+   npm publish --access public
    ```
-   The `publish.yml` workflow runs `npm publish --access public --provenance`.
+2. On npmjs.com → your package → **Settings → Trusted Publisher → GitHub
+   Actions**, set:
+   - Organization/user: `cuongdev`
+   - Repository: `hermes-zalo-bridge`
+   - Workflow filename: `publish.yml`
 
-You can also publish manually: `npm publish --access public` after `npm login`.
+**After that**, releases are automatic and tokenless:
+
+```bash
+npm version patch        # bumps package.json + creates a git tag
+git push --follow-tags   # the v* tag triggers publish.yml (OIDC publish)
+```
+
+The workflow runs on Node 24 / npm latest (Trusted Publishing needs npm ≥ 11.5.1)
+and publishes with `--provenance`, so each release is cryptographically attested
+to this repo and workflow.
 
 ## License
 
@@ -307,6 +320,5 @@ MIT © [Cường Tuấn Nguyễn](https://github.com/cuongdev)
 
 ## Star History
 
-If this saved you time, a ⭐ helps others find it.
-
-[![Star History Chart](https://api.star-history.com/svg?repos=cuongdev/hermes-zalo-bridge&type=Date)](https://star-history.com/#cuongdev/hermes-zalo-bridge&Date)
+If this saved you time, a ⭐ helps others find it —
+[**view the star history chart**](https://star-history.com/#cuongdev/hermes-zalo-bridge&Date).

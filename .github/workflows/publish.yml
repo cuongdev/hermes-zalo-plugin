@@ -1,7 +1,15 @@
 name: Publish to npm
 
-# Publishes when you push a version tag (e.g. v1.0.0) or create a GitHub Release.
-# Requires an NPM_TOKEN secret (see README → Publishing).
+# Publishes on version tags (v*) using npm Trusted Publishing (OIDC) — no token
+# needed. The short-lived credential is minted per-run from GitHub's OIDC, so
+# there's no long-lived secret to leak.
+#
+# ONE-TIME SETUP (see README → Publishing):
+#   1. Publish v1.0.0 manually once (npmjs requires the package to exist before
+#      you can enable trusted publishing for it).
+#   2. On npmjs.com → the package → Settings → Trusted Publisher → GitHub Actions,
+#      set: repo = cuongdev/hermes-zalo-bridge, workflow file = publish.yml.
+#   3. From then on, pushing a v* tag publishes automatically — no NPM_TOKEN.
 on:
   push:
     tags:
@@ -9,20 +17,24 @@ on:
   release:
     types: [published]
 
+permissions:
+  id-token: write # required for OIDC trusted publishing
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write # enables npm provenance
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "24" # Trusted Publishing needs Node >= 22.14
           registry-url: "https://registry.npmjs.org"
-          cache: npm
+
+      # Trusted Publishing needs npm >= 11.5.1 (newer than what ships with Node).
+      - name: Upgrade npm
+        run: npm install -g npm@latest
 
       - run: npm ci
 
@@ -32,7 +44,5 @@ jobs:
             node --check "$f"
           done
 
-      - name: Publish
+      - name: Publish (OIDC, with provenance)
         run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
