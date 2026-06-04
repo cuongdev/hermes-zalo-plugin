@@ -16,26 +16,9 @@ const force = process.argv.includes("--force") || process.argv.includes("--relog
 const CREDENTIALS_PATH = credentialsPath();
 const QR_PATH = qrPath();
 
-// Optional: pretty ASCII QR in the terminal if qrcode-terminal is available
-// and zca-js gave us the QR payload. Falls back to the PNG path otherwise.
-let qrterm = null;
-try {
-  qrterm = (await import("qrcode-terminal")).default;
-} catch {
-  /* optional dependency; PNG fallback still works */
-}
-
-function printQR(ev) {
-  const data = ev?.data || {};
-  // zca-js QRCodeGenerated payload carries a base64 PNG in `image`, and on some
-  // versions the raw QR string in `code`. Prefer ASCII when we have the string.
-  if (qrterm && typeof data.code === "string" && data.code) {
-    console.log("\nScan this QR with the Zalo app (Zalo → + → Quét mã QR):\n");
-    qrterm.generate(data.code, { small: true });
-  } else {
-    console.log(`\nQR code saved to:\n  ${QR_PATH}\nOpen it and scan with the Zalo app (Zalo → + → Quét mã QR).`);
-  }
-}
+// The QR (scannable ASCII + live countdown + auto-refresh) is rendered by
+// ZaloClient.login() itself when stdout is a TTY, so this script just drives
+// the flow.
 
 // Check whether a bridge is already running and logged in. If so we must NOT
 // open a second Zalo connection (Zalo kicks the old one — DuplicateConnection
@@ -83,9 +66,6 @@ async function main() {
 
   const client = new ZaloClient({ credentialsPath: CREDENTIALS_PATH, qrPath: QR_PATH });
 
-  // Surface QR events to the terminal (zaloClient may re-emit; harmless if not).
-  client.on?.("qr", printQR);
-
   console.log("Starting Zalo QR login…");
   try {
     const res = await client.login({ forceQR: true });
@@ -101,6 +81,4 @@ async function main() {
   }
 }
 
-// zaloClient's loginQR callback logs QR status to stdout already; also poll
-// qrState so we can render the ASCII QR as soon as it's generated.
 main();
