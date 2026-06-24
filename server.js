@@ -15,6 +15,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ZaloClient } from "./zaloClient.js";
+import { markdownToZalo } from "./markdownToZalo.js";
 import { ACTION_GROUPS, DEFAULT_GROUPS, ACTION_GROUP } from "./permissions.js";
 import { credentialsPath, qrPath, cliMsgDir } from "./paths.js";
 
@@ -309,12 +310,12 @@ function requireLogin(res) {
 app.post("/send", async (req, res) => {
   if (!checkAuth(req, res)) return;
   if (!requireLogin(res)) return;
-  const { threadId, threadType = "user", text, mentions, quote } = req.body || {};
+  const { threadId, threadType = "user", text, mentions, quote, styles } = req.body || {};
   if (!threadId || text == null) {
     return res.status(400).json({ error: "threadId and text required" });
   }
   try {
-    const r = await client.sendText(threadId, threadType, text, mentions, quote);
+    const r = await client.sendText(threadId, threadType, text, mentions, quote, styles);
     res.json({ success: true, result: r });
   } catch (e) {
     res.status(500).json({ error: String(e && e.message ? e.message : e) });

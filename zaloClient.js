@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { EventEmitter } from "node:events";
 import { Zalo, ThreadType, LoginQRCallbackEventType, Reactions } from "zca-js";
+import { markdownToZalo } from "./markdownToZalo.js";
 
 const DEFAULT_UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0";
@@ -848,8 +849,22 @@ export class ZaloClient extends EventEmitter {
 
   // ── Outbound ──────────────────────────────────────────────────────────
 
-  async sendText(threadId, threadType, text, mentions, quote) {
-    const content = { msg: String(text) };
+  async sendText(threadId, threadType, text, mentions, quote, styles) {
+    const msgText = String(text);
+    let content;
+
+    if (styles && Array.isArray(styles) && styles.length > 0) {
+      // Explicit styles provided — trust the caller
+      content = { msg: msgText, styles };
+    } else {
+      // Auto-convert markdown syntax → Zalo styles
+      const converted = markdownToZalo(msgText);
+      content = { msg: converted.text };
+      if (converted.styles.length > 0) {
+        content.styles = converted.styles;
+      }
+    }
+
     if (Array.isArray(mentions) && mentions.length) content.mentions = mentions;
     if (quote) content.quote = quote;
     return await this.api.sendMessage(content, String(threadId), this._threadTypeEnum(threadType));
