@@ -345,6 +345,35 @@ export class ZaloClient extends EventEmitter {
   }
 
   /**
+   * Build the full Zalo login URL the mobile app expects from the raw QR token.
+   * Zalo's generate endpoint hands back a bare `zaloqr:v2_...` token, but the
+   * app actually scans a `http://zaloapp.com/qr/l?tk=<token>` URL. Idempotent:
+   * a token that is already a URL is returned unchanged.
+   */
+  _qrLoginUrl(token) {
+    const s = String(token || "");
+    if (!s) return s;
+    if (/^https?:\/\//i.test(s)) return s;
+    return `http://zaloapp.com/qr/l?tk=${s}`;
+  }
+
+  /**
+   * Render a PNG QR encoding `text`, returning raw base64 (no data: prefix) so
+   * it drops straight into qrState.image and the qr.png file. Returns null if
+   * the optional `qrcode` dep isn't installed (caller falls back to Zalo's
+   * server-rendered image).
+   */
+  async _qrPngBase64(text) {
+    try {
+      const QR = (await import("qrcode")).default;
+      const dataUrl = await QR.toDataURL(text, { margin: 2, width: 512 });
+      return dataUrl.replace(/^data:image\/png;base64,/, "");
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Attempt login. If saved credentials exist, use them. Otherwise run the
    * QR flow: writes the QR PNG, exposes base64 via qrState, resolves once the
    * phone confirms. Throws on hard failure.
@@ -431,23 +460,33 @@ export class ZaloClient extends EventEmitter {
       { userAgent: DEFAULT_UA, qrPath: this.qrPath },
       (event) => {
         switch (event.type) {
-          case LoginQRCallbackEventType.QRCodeGenerated:
-            this._qrState = { status: "waiting_scan", image: event.data.image };
-            // zca-js does NOT auto-save the PNG when a callback is supplied, so
-            // persist it ourselves (for /qr.png and the file fallback).
-            try {
-              fs.writeFileSync(
-                this.qrPath,
-                String(event.data.image || "").replace(/^data:image\/png;base64,/, ""),
-                "base64",
-              );
-            } catch {
-              /* ignore */
-            }
-            // The QR image encodes event.data.token (a zaloapp.com/qr URL), NOT
-            // event.data.code (the polling session id) — render the token.
-            showQr(event.data.token);
+          case LoginQRCallbackEventType.QRCodeGenerated: {
+            // Zalo's generate endpoint returns a bare `zaloqr:v2_...` token and a
+            // server-rendered PNG that encodes only that token. The mobile app
+            // expects the full `http://zaloapp.com/qr/l?tk=<token>` URL, so we
+            // wrap the token and regenerate the QR ourselves (terminal + PNG +
+            // the base64 served over /qr) rather than reuse Zalo's image.
+            const loginUrl = this._qrLoginUrl(event.data.token);
+            this._qrState = { status: "waiting_scan", image: null };
+            // Render our own PNG async; fall back to Zalo's image if the
+            // optional `qrcode` dep is missing. zca-js does NOT auto-save the PNG
+            // when a callback is supplied, so persist it ourselves too.
+            (async () => {
+              const png =
+                (await this._qrPngBase64(loginUrl)) ||
+                String(event.data.image || "").replace(/^data:image\/png;base64,/, "");
+              if (this._qrState && this._qrState.status === "waiting_scan") {
+                this._qrState.image = png;
+              }
+              try {
+                fs.writeFileSync(this.qrPath, png, "base64");
+              } catch {
+                /* ignore */
+              }
+            })();
+            showQr(loginUrl);
             break;
+          }
           case LoginQRCallbackEventType.QRCodeScanned:
             this._qrState = {
               status: "scanned",

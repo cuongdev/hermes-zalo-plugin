@@ -53,6 +53,7 @@
   "homepage": "https://github.com/cuongdev/hermes-zalo-plugin#readme",
   "dependencies": {
     "express": "^4.21.2",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "zca-js": "^2.1.2"
   }
