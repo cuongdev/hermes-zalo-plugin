@@ -26,8 +26,13 @@ const QR_PATH = qrPath();
 async function bridgeAlreadyLoggedIn() {
   const port = process.env.ZALO_PLUGIN_PORT || "8787";
   const host = process.env.ZALO_PLUGIN_HOST || "127.0.0.1";
+  const token = process.env.ZALO_PLUGIN_TOKEN || "";
+  const headers = token ? { "x-bridge-token": token } : {};
   try {
-    const res = await fetch(`http://${host}:${port}/health`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`http://${host}:${port}/health`, {
+      headers,
+      signal: AbortSignal.timeout(3000),
+    });
     if (!res.ok) return false;
     const j = await res.json();
     return !!j.loggedIn && !j.sessionDead;
