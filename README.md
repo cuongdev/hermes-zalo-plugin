@@ -38,6 +38,25 @@ is Python — is exactly what the thin Node bridge pays for.
 > ⚠️ **zca-js is UNOFFICIAL.** Use a secondary Zalo account. Zalo may
 > rate-limit or lock accounts that automate. You accept that risk.
 
+## Companion X/Twitter Context
+
+For social monitoring workflows, pair this bridge with
+[Hermes Tweet](https://github.com/Xquik-dev/hermes-tweet), the native Hermes
+Agent plugin for Xquik. Install and enable its current `0.1.8` release:
+
+```bash
+hermes plugins install Xquik-dev/hermes-tweet --enable
+```
+
+Use `tweet_explore` to discover a catalog-listed route, then use `tweet_read`
+for public read-only X/Twitter context. Keep `tweet_action` disabled unless the
+operator approves the exact private or write-like operation. Hermes can pass a
+resulting summary or follow-up prompt to this bridge for delivery to an allowed
+Zalo user or group.
+
+Xquik is an independent third-party service. Not affiliated with X Corp.
+"Twitter" and "X" are trademarks of X Corp.
+
 ## Requirements
 
 Before installing, make sure you have:

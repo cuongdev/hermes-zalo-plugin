@@ -32,9 +32,22 @@ function runNode(script, args = []) {
 async function status() {
   const port = process.env.ZALO_PLUGIN_PORT || "8787";
   const host = process.env.ZALO_PLUGIN_HOST || "127.0.0.1";
+  const token = process.env.ZALO_PLUGIN_TOKEN || "";
+  const headers = token ? { "x-bridge-token": token } : {};
   console.log(`Data directory: ${dataDir()}`);
   try {
-    const res = await fetch(`http://${host}:${port}/health`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`http://${host}:${port}/health`, {
+      headers,
+      signal: AbortSignal.timeout(3000),
+    });
+    if (res.status === 401) {
+      console.log("Bridge: authentication failed.");
+      console.log("  Set ZALO_PLUGIN_TOKEN to the bridge token, then retry.");
+      return;
+    }
+    if (!res.ok) {
+      throw new Error(`health returned HTTP ${res.status}`);
+    }
     const j = await res.json();
     console.log(`Bridge: RUNNING on http://${host}:${port}`);
     console.log(`  loggedIn=${j.loggedIn} sessionDead=${j.sessionDead} ownId=${j.ownId || "-"}`);

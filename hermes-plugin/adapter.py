@@ -324,8 +324,11 @@ class ZaloAdapter(BasePlatformAdapter):
         # Probe bridge health and login state.
         try:
             async with self._session.get(
-                f"{self.bridge_url}/health", timeout=aiohttp.ClientTimeout(total=10)
+                f"{self.bridge_url}/health",
+                headers=self._headers(),
+                timeout=aiohttp.ClientTimeout(total=10),
             ) as resp:
+                resp.raise_for_status()
                 data = await resp.json()
         except Exception as e:
             logger.error("Zalo: cannot reach bridge at %s — %s", self.bridge_url, e)
@@ -1370,7 +1373,7 @@ def interactive_setup() -> None:
     else:
         print_warning("⚠ Cấu hình Zalo đã lưu, NHƯNG bridge chưa sẵn sàng — bot sẽ chưa hoạt động.")
         print_info("  Bridge (Node service) phải ĐANG CHẠY và đã đăng nhập thì bot mới chạy được.")
-        print_info(f"  • Kiểm tra:        curl {bridge}/health")
+        print_info(f"  • Kiểm tra:        {cli} status")
         print_info(f"  • Bật service:     {cli} setup --service-only   (đã login thì không cần QR)")
         print_info(f"  • Đăng nhập QR:    {cli} login                  (nếu bị đăng xuất)")
         print_info("  Xong rồi chạy:  hermes gateway")

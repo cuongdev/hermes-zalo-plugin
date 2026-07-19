@@ -289,7 +289,7 @@ function nextSteps() {
 ✓ Zalo plugin is set up.
 
   Bridge URL:  http://127.0.0.1:${port}
-  Health:      curl http://127.0.0.1:${port}/health
+  Health:      hermes-zalo-plugin status
 
 Next, register Zalo in Hermes:
   1) hermes gateway setup     → choose "Zalo" (🇻🇳)
