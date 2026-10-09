@@ -302,7 +302,10 @@ class ZaloAdapter(BasePlatformAdapter):
 
     # ── Connection lifecycle ──────────────────────────────────────────────
 
-    async def connect(self) -> bool:
+    async def connect(self, *, is_reconnect: bool = False) -> bool:
+        # Hermes gateway always passes is_reconnect (cold start False, watcher True).
+        # Zalo has no server-side update queue to preserve; the SSE loop reconnects itself.
+        del is_reconnect
         if not self.bridge_url:
             self._set_fatal_error("config_missing", "ZALO_PLUGIN_URL must be set", retryable=False)
             return False
