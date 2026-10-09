@@ -20,6 +20,7 @@
     "hermes-plugin/",
     "server.js",
     "zaloClient.js",
+    "markdownToZalo.js",
     "permissions.js",
     "paths.js",
     "login.mjs",
