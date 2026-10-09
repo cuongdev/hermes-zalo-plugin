@@ -67,14 +67,19 @@ function help() {
 
 Commands:
   setup        Log in (QR) if needed and install a background auto-start service
+               --hermes-home <path>   copy the adapter into this Hermes profile
+                                      instead of ~/.hermes (also reads HERMES_HOME)
   login        QR login only (--force to re-scan an existing session)
   start        Run the bridge in the foreground (Ctrl-C to stop)
   stop         Stop & remove the background service (alias of uninstall)
   status       Show bridge health and the data directory
   uninstall    Remove the background service (--purge also deletes credentials)
+               --hermes-home <path>   remove the adapter from that Hermes profile
   help         Show this message
 
 Data lives in ~/.hermes-zalo/ (override with ZALO_DATA_DIR).
+The Hermes adapter is installed into ~/.hermes only when that directory already
+exists. For another profile:  hermes-zalo-plugin setup --hermes-home <path>
 After 'setup', register it in Hermes:  hermes gateway setup  → choose Zalo.`);
 }
 

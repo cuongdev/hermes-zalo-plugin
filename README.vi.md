@@ -108,6 +108,7 @@ Vậy là xong — đăng nhập + setup chỉ làm một lần; bridge tự s�
 | `--no-service` | Chỉ cài deps + login; tự chạy bridge bằng `npm start`. |
 | `--relogin` | Bắt buộc đăng nhập QR lại (vd khi phiên hết hạn). |
 | `--service-only` | Chỉ (cài lại) dịch vụ nền. |
+| `--hermes-home <path>` | Copy adapter Hermes vào profile này thay vì `~/.hermes`. `HERMES_HOME` cũng được. `~/.hermes` mặc định chỉ dùng khi thư mục đã tồn tại — setup không tự tạo nó. |
 
 Gỡ dịch vụ nền (giữ lại credentials):
 

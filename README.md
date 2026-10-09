@@ -107,6 +107,7 @@ That's it — login + setup are one-time; the bridge stays alive on its own.
 | `--no-service` | Install deps + login only; run the bridge yourself with `npm start`. |
 | `--relogin` | Force a fresh QR login (e.g. after the session expired). |
 | `--service-only` | (Re)install just the background service. |
+| `--hermes-home <path>` | Copy the Hermes adapter into this profile instead of `~/.hermes`. `HERMES_HOME` does the same. The default `~/.hermes` is used only when it already exists — setup never creates it. |
 
 Remove the background service (credentials kept):
 

@@ -3,14 +3,16 @@
 //
 //   node uninstall.mjs              # stop + remove the auto-start service
 //   node uninstall.mjs --purge      # also delete data/credentials.json (logout)
+//   node uninstall.mjs --hermes-home <path>   # remove the adapter from that profile
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { credentialsPath } from "./paths.js";
+import { credentialsPath, resolveHermesHome } from "./paths.js";
 
-const PURGE = process.argv.includes("--purge");
+const argv = process.argv.slice(2);
+const PURGE = argv.includes("--purge");
 const PLATFORM = process.platform;
 const LABEL = "com.hermes.zaloplugin";
 
@@ -59,7 +61,18 @@ function removeService() {
 // ~/.hermes/plugins/zalo and drop "zalo-platform" from plugins.enabled. Leaves
 // the rest of config.yaml untouched.
 function removeHermesPlugin() {
-  const hermesHome = process.env.HERMES_HOME || path.join(os.homedir(), ".hermes");
+  let home;
+  try {
+    home = resolveHermesHome(argv);
+  } catch (e) {
+    console.error(`\n✗ ${e.message}`);
+    process.exit(1);
+  }
+  const hermesHome = home.dir;
+  if (home.source === "default" && !fs.existsSync(hermesHome)) {
+    log(`• No Hermes home at ${hermesHome}. Pass --hermes-home <path> if the plugin lives in another profile.`);
+    return;
+  }
   const dest = path.join(hermesHome, "plugins", "zalo");
   if (fs.existsSync(dest)) {
     fs.rmSync(dest, { recursive: true, force: true });
@@ -77,7 +90,7 @@ function removeHermesPlugin() {
     }
   } catch (e) {
     log(`⚠ Could not edit config.yaml: ${e.message}`);
-    log('  Manually remove "zalo-platform" from plugins.enabled in ~/.hermes/config.yaml');
+    log(`  Manually remove "zalo-platform" from plugins.enabled in ${cfgPath}`);
   }
 }
 

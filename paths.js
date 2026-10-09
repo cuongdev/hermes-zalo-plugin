@@ -37,3 +37,41 @@ export function cliMsgDir() {
 export function logDir() {
   return process.env.ZALO_LOG_DIR || dataDir();
 }
+
+function flagValue(argv, name) {
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === name) {
+      const next = argv[i + 1];
+      if (next == null || next.startsWith("-")) {
+        throw new Error(`${name} requires a path`);
+      }
+      return next;
+    }
+    if (a.startsWith(`${name}=`)) {
+      const value = a.slice(name.length + 1);
+      if (!value) throw new Error(`${name} requires a path`);
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function expandUserPath(p) {
+  if (p === "~") return os.homedir();
+  if (p.startsWith("~/") || p.startsWith("~\\")) return path.resolve(path.join(os.homedir(), p.slice(2)));
+  return path.resolve(p);
+}
+
+// Hermes profile the Python adapter is copied into.
+//   1) --hermes-home <path>   (setup / uninstall)
+//   2) HERMES_HOME
+//   3) ~/.hermes              (only used when it already exists; never created)
+// Returns { dir, source: "flag" | "env" | "default" }.
+export function resolveHermesHome(argv = []) {
+  const flagged = flagValue(argv, "--hermes-home");
+  if (flagged != null) return { dir: expandUserPath(flagged), source: "flag" };
+  const env = (process.env.HERMES_HOME || "").trim();
+  if (env) return { dir: expandUserPath(env), source: "env" };
+  return { dir: path.join(os.homedir(), ".hermes"), source: "default" };
+}

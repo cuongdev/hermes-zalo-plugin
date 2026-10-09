@@ -6,6 +6,8 @@
 //   node install.mjs --no-service    # deps → login only (run `npm start` yourself)
 //   node install.mjs --relogin       # force a fresh QR login
 //   node install.mjs --service-only  # (re)install just the background service
+//   node install.mjs --hermes-home ~/hermes-work   # install the adapter into this
+//                                    # Hermes profile instead of ~/.hermes
 //
 // After this, the end-user only needs:  hermes gateway setup  → choose Zalo.
 
@@ -14,7 +16,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { logDir } from "./paths.js";
+import { logDir, resolveHermesHome } from "./paths.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
@@ -198,11 +200,27 @@ function installHermesPlugin() {
     log("⚠ hermes-plugin/ not found in package — skipping (bridge still works standalone).");
     return;
   }
-  const hermesHome = process.env.HERMES_HOME || path.join(os.homedir(), ".hermes");
+  let home;
+  try {
+    home = resolveHermesHome(argv);
+  } catch (e) {
+    die(e.message);
+  }
+  const hermesHome = home.dir;
+  const from = home.source === "flag" ? "--hermes-home"
+    : home.source === "env" ? "HERMES_HOME"
+    : "default ~/.hermes";
+  log(`Hermes home: ${hermesHome} (${from})`);
+  // Never create the default ~/.hermes. A profile only gets the plugin when
+  // the user pointed at it (--hermes-home / HERMES_HOME) or Hermes is already there.
   if (!fs.existsSync(hermesHome)) {
-    log(`⚠ Hermes home not found at ${hermesHome}. Is Hermes installed?`);
-    log("  Skipping plugin install. After installing Hermes, re-run: npx hermes-zalo-plugin setup --service-only");
-    return;
+    if (home.source === "default") {
+      log(`⚠ Hermes home not found at ${hermesHome}.`);
+      log("  Skipping plugin install. Pass --hermes-home <path> for a non-default profile,");
+      log("  or install Hermes and re-run: npx hermes-zalo-plugin setup --service-only");
+      return;
+    }
+    fs.mkdirSync(hermesHome, { recursive: true });
   }
   const dest = path.join(hermesHome, "plugins", "zalo");
   fs.mkdirSync(dest, { recursive: true });
@@ -220,7 +238,7 @@ function installHermesPlugin() {
         : '✓ Created plugins.enabled with "zalo-platform" in config.yaml');
   } catch (e) {
     log(`⚠ Could not auto-enable the plugin: ${e.message}`);
-    log('  Manually add "zalo-platform" under plugins.enabled in ~/.hermes/config.yaml');
+    log(`  Manually add "zalo-platform" under plugins.enabled in ${cfgPath}`);
   }
 }
 
